@@ -1,0 +1,32 @@
+From: Ethan Blanch <ethan.blanch@outlook.com>
+Date: Sun, 27 Sep 2026 00:05:00 +1200
+Subject: [PATCH] compat: include <signal.h> before the SYS_SECCOMP fallback
+
+glibc declares SYS_SECCOMP as an enum constant in <bits/siginfo-consts.h>
+(under _GNU_SOURCE, and only in newer releases). Defining the fallback macro
+before <signal.h> is seen turns that enum into "1 = 1" and fails with
+"expected identifier"; guarding on __ANDROID__ instead leaves it undeclared
+on older glibc. Including <signal.h> first (hosted builds only; the loader
+is freestanding) lets the fallback depend on what libc actually provides.
+No change for bionic.
+---
+diff --git a/src/compat.h b/src/compat.h
+index 53300b8..7b8abd1 100644
+--- a/src/compat.h
++++ b/src/compat.h
+@@ -261,6 +261,15 @@
+ #    ifndef NT_ARM_SYSTEM_CALL
+ #        define NT_ARM_SYSTEM_CALL		0x404
+ #    endif
++#    /* Modified 2026-09-26 for uls-proot (github.com/ItsPhysip/uls-proot):
++     * include <signal.h> before the fallback.  glibc declares SYS_SECCOMP
++     * as an enum constant there (under _GNU_SOURCE); defining the macro
++     * first turns that enum into "1 = 1" and breaks static glibc builds.
++     * Skipped for the freestanding loader, which has no libc headers and
++     * never includes <signal.h>.  Bionic builds are unchanged. */
++#    if __STDC_HOSTED__
++#        include <signal.h>
++#    endif
+ #    ifndef SYS_SECCOMP
+ #        define SYS_SECCOMP 1
+ #    endif
