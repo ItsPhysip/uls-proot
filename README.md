@@ -12,7 +12,7 @@ SHA-256 sums, and ULS's catalog pins those sums.
 
 Until now ULS used stock proot-me v5.3.0. On Android kernels ≥ 5.8 several
 path-taking syscalls reach the kernel with the *guest* path untranslated,
-and one crashes proot outright. Measured on a Samsung SM-S948B
+and one crashes proot outright. Measured on a Samsung Galaxy S26 Ultra (SM-S948B)
 (kernel 6.12, Android 16), with no ULS compatibility shims loaded:
 
 | Problem | proot-me 5.3.0 | proot-me 5.4.1 | termux/proot |
@@ -38,7 +38,7 @@ and writes `dist/BUILDINFO-<arch>`.
 
 | Arch | Built on | Tested on a device |
 |---|---|---|
-| aarch64 | native arm64 runner | yes (SM-S948B) |
+| aarch64 | native arm64 runner | yes (Galaxy S26 Ultra, SM-S948B) |
 | x86_64 | native x86_64 runner | no |
 | armv7 | armhf container under qemu-user | no |
 
