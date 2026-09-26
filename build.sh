@@ -47,10 +47,13 @@ cd "talloc-$TALLOC_VERSION"
 ./configure --disable-python --prefix="$work/talloc-inst" >/dev/null
 make >/dev/null
 mkdir -p "$work/talloc/lib" "$work/talloc/include"
-# waf builds talloc.c twice (library + compat variant). Both export the same
-# API; archive the first so there are no duplicate symbols.
+# waf builds talloc.c and libreplace's replace.c twice each (library +
+# compat variant) with the same exports; archive the first of each so there
+# are no duplicate symbols.  libreplace supplies rep_* fallbacks for libc
+# functions older glibc lacks (e.g. memset_explicit before glibc 2.40).
 obj=$(ls bin/default/talloc.c.*.o | sort -V | head -n1)
-ar rcs "$work/talloc/lib/libtalloc.a" "$obj"
+rep=$(ls bin/default/lib/replace/replace.c.*.o | sort -V | head -n1)
+ar rcs "$work/talloc/lib/libtalloc.a" "$obj" "$rep"
 cp talloc.h "$work/talloc/include/"
 
 # --- proot ------------------------------------------------------------------
