@@ -1,11 +1,15 @@
 # uls-proot
 
-Static [termux/proot](https://github.com/termux/proot) builds for
+Static proot builds for
 [ULS](https://github.com/Jaseunda/uls). ULS runs a Linux rootfs on an
 Android phone over ADB, with proot as the sandbox.
 
-Every binary is built by CI in this repository from a pinned upstream
-commit, plus the patches in [`patches/`](patches/). Release assets carry
+The source is **[ItsPhysip/proot](https://github.com/ItsPhysip/proot), branch
+`uls`**: [termux/proot](https://github.com/termux/proot) plus a few fixes that
+are waiting upstream. Its
+[ULS-CHANGES.md](https://github.com/ItsPhysip/proot/blob/uls/ULS-CHANGES.md)
+lists each change with its date and upstream PR. Every binary is built by CI
+in this repository from a pinned commit of that branch. Release assets carry
 SHA-256 sums, and ULS's catalog pins those sums.
 
 ## Why termux/proot
@@ -21,6 +25,7 @@ and one crashes proot outright. Measured on a Samsung Galaxy S26 Ultra (SM-S948B
 | `openat2`: resolves against the host (`/system` opens) | leaks | leaks | **fixed** |
 | `readlinkat(fd, "")`: assertion kills the sandbox (systemd-tmpfiles) | crashes | **fixed** | **fixed** |
 | `fchmodat2` | broken | broken | broken |
+| link2symlink (`-l`): file **destroyed** once a name's intermediate suffixes run out (dpkg backups) | — | — | destroyed; **fixed in the `uls` branch** (termux/proot#394) |
 
 `fchmodat2`, plus the Android SELinux and uid issues that aren't proot's
 (socket files, D-Bus peer credentials), are handled by ULS's libc shims.
@@ -44,13 +49,15 @@ and writes `dist/BUILDINFO-<arch>`.
 
 ## Releasing
 
-Push a tag named `termux-<short upstream commit>-r<n>` (for example
-`termux-d4d2a19-r1`). CI builds all three architectures and publishes a
-release whose title is the tag.
+Push a tag named `uls-<short fork commit>-r<n>` (for example
+`uls-f2cbc4f-r1`). CI builds all three architectures and publishes a release
+whose title is the tag. The earlier `termux-d4d2a19-r1` release was built
+from stock termux/proot plus two patches.
 
 ## Licence
 
 proot is free software under the GNU General Public License, version 2.
-See [`COPYING`](COPYING), which comes from upstream unchanged. The patches
-and build files in this repository are distributed under the same licence.
-Each patched upstream file carries a notice of what was changed and when.
+See [`COPYING`](COPYING), which comes from upstream unchanged. The build files
+here, and the changes in the fork, are distributed under the same licence.
+The fork's changes are listed with dates in its ULS-CHANGES.md, and each one
+is a separate commit.

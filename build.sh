@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build a static termux/proot for the current machine's architecture.
+# Build a static proot (the ULS fork of termux/proot) for this machine's
+# architecture.
 #
 #   ./build.sh                  build into ./dist
 #   INSTALL_DEPS=1 ./build.sh   also apt-get install the build dependencies
@@ -9,8 +10,10 @@
 # Output: dist/proot-<arch> and dist/BUILDINFO-<arch>
 set -euo pipefail
 
-PROOT_REPO=https://github.com/termux/proot.git
-PROOT_COMMIT=d4d2a19081c3c07f75250e4ce2980b9fa2f5720f
+# ULS fork of termux/proot: its `uls` branch, pinned.  Changes and their
+# upstream PRs are listed in ULS-CHANGES.md in that repository.
+PROOT_REPO=https://github.com/ItsPhysip/proot.git
+PROOT_COMMIT=f2cbc4f057f92283765e262c0c5c7411107d6a08
 TALLOC_VERSION=2.5.0
 TALLOC_SHA256=912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
 
@@ -62,7 +65,9 @@ git init -q proot
 cd proot
 git fetch -q --depth 1 "$PROOT_REPO" "$PROOT_COMMIT"
 git checkout -q FETCH_HEAD
+# Local patches on top of the pinned commit, if any.
 for p in "$here"/patches/*.patch; do
+    [ -e "$p" ] || continue
     git apply "$p"
 done
 
@@ -83,7 +88,7 @@ cp src/proot "$dist/proot-$arch"
 {
     echo "arch:          $arch"
     echo "proot:         $PROOT_REPO @ $PROOT_COMMIT"
-    echo "patches:       $(cd "$here/patches" && ls *.patch | tr '\n' ' ')"
+    echo "patches:       $(cd "$here/patches" 2>/dev/null && ls *.patch 2>/dev/null | tr '\n' ' ')"
     echo "talloc:        $TALLOC_VERSION (sha256 $TALLOC_SHA256)"
     echo "compiler:      $(clang --version | head -n1)"
     echo "libc (static): $(ldd --version | head -n1)"

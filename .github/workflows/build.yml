@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches: [main]
-    tags: ['termux-*']
+    tags: ['termux-*', 'uls-*']
   pull_request:
   workflow_dispatch:
 
@@ -77,7 +77,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo "Static proot built from [termux/proot](https://github.com/termux/proot) with the patches in \`patches/\`. Source, patches and build script are in this repository at \`$GITHUB_REF_NAME\`."
+            echo "Static proot built from the ULS fork of termux/proot ([ItsPhysip/proot](https://github.com/ItsPhysip/proot), \`uls\` branch; changes listed in its ULS-CHANGES.md). The exact commit and build script are in this repository at \`$GITHUB_REF_NAME\`."
             echo
             echo "armv7 is built under qemu-user and has **not** been tested on a device."
             echo
