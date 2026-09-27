@@ -13,7 +13,7 @@ set -euo pipefail
 # ULS fork of termux/proot: its `uls` branch, pinned.  Changes and their
 # upstream PRs are listed in ULS-CHANGES.md in that repository.
 PROOT_REPO=https://github.com/ItsPhysip/proot.git
-PROOT_COMMIT=68fe752d46a659ad06cd9480e58bc3fa916efdd6
+PROOT_COMMIT=a7d996b0d7a3bcaffa51008f348977956d137e30
 TALLOC_VERSION=2.5.0
 TALLOC_SHA256=912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
 
