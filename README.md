@@ -24,11 +24,12 @@ and one crashes proot outright. Measured on a Samsung Galaxy S26 Ultra (SM-S948B
 | `faccessat2`: pacman, `bash [ -r ]`, glibc `realpath("dir/")` | broken | broken on arm64 (support is x86_64-only) | **fixed** |
 | `openat2`: resolves against the host (`/system` opens) | leaks | leaks | **fixed** |
 | `readlinkat(fd, "")`: assertion kills the sandbox (systemd-tmpfiles) | crashes | **fixed** | **fixed** |
-| `fchmodat2` | broken | broken | broken |
+| `fchmodat2`: untranslated, so host-only paths are acted on (`/system` → EROFS) | broken | broken | broken; **fixed in the `uls` branch** (termux/proot#400) |
 | link2symlink (`-l`): file **destroyed** once a name's intermediate suffixes run out (dpkg backups) | — | — | destroyed; **fixed in the `uls` branch** (termux/proot#394) |
 
-`fchmodat2`, plus the Android SELinux and uid issues that aren't proot's
-(socket files, D-Bus peer credentials), are handled by ULS's libc shims.
+The Android SELinux issues that aren't proot's (socket files, hard links,
+audit netlink) are handled by ULS's libc shims. termux/proot already reports
+the peer's *emulated* uid for `SO_PEERCRED`, which the shims alone can't.
 
 ## Build
 
